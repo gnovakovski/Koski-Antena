@@ -1,13 +1,14 @@
 package com.example.koskiantena;
 
-import android.animation.ValueAnimator;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,7 +20,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    ImageView imgMagic;
+    ImageView imgStatic, imgTv;
     TextView txtSignal;
     private SensorManager sensorManager;
     public static DecimalFormat DECIMAL_FORMATTER;
@@ -27,8 +28,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
-        imgMagic = findViewById(R.id.imgMagic);
+        imgStatic = findViewById(R.id.imgStatic);
+        imgTv = findViewById(R.id.imgTv);
         txtSignal = findViewById(R.id.txtSignal);
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         symbols.setDecimalSeparator('.');
@@ -36,10 +41,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         getSystemService(SENSOR_SERVICE);
         getSupportActionBar().hide();
+
         Glide.with(this)
-                .load(R.drawable.mgc) // aqui é teu gif
+                .load(R.drawable.pow)
                 .asGif()
-                .into(imgMagic);
+                .into(imgTv);
+        Glide.with(this)
+                .load(R.drawable.st) // aqui é teu gif
+                .asGif()
+                .into(imgStatic);
 
     }
 
@@ -63,11 +73,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             float magY = event.values[1];
             float magZ = event.values[2];
             double magnitude = Math.sqrt((magX * magX) + (magY * magY) + (magZ * magZ));
-            int min = 400;
-            int max = 1400;
+            int min = 1;
+            int max = 100;
+            int minM = 0;
+            int maxM = 150;
             double total = (magnitude - min)/max;
-            txtSignal.setText(DECIMAL_FORMATTER.format(total));
-            imgMagic.setAlpha(Float.parseFloat(Double.toString(total)));
+            Log.d("magnitude", magnitude+ "");
+            Log.d("total", 1/total+"");
+            Log.d("tv", (magnitude - minM)/maxM+"");
+            txtSignal.setText(DECIMAL_FORMATTER.format(1/total));
+            imgStatic.setAlpha(Float.parseFloat(Double.toString(1/total)));
+            imgTv.setAlpha(Float.parseFloat(Double.toString(((magnitude - minM)/maxM))));
         }
     }
 
